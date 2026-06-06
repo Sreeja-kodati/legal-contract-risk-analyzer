@@ -4,9 +4,14 @@ const path = require('path');
 const fs = require('fs');
 const { uploadHandler } = require('../controllers/uploadController');
 
-const uploadDir = path.resolve(__dirname, '../uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+const uploadDir = process.env.UPLOAD_DIR || path.resolve(__dirname, '../uploads');
+try {
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+    console.log('[UploadRoutes] Created uploads directory at:', uploadDir);
+  }
+} catch (error) {
+  console.error('[UploadRoutes] Failed to create uploads directory:', error.message);
 }
 
 const MAX_FILE_SIZE = 20 * 1024 * 1024;

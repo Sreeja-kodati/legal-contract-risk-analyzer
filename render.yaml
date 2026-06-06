@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: legal-contract-analyzer
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install && cd ../frontend && npm install && npm run build
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_PATH
+        value: /data/contracts.db
+      - key: UPLOAD_DIR
+        value: /data/uploads
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PINECONE_API_KEY
+        sync: false
+      - key: PINECONE_INDEX_NAME
+        value: legal-contract-rag
+    disk:
+      name: sqlite-data
+      mountPath: /data
+      sizeGB: 1

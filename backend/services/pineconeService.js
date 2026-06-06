@@ -135,7 +135,18 @@ async function queryVectors(queryVector, topK = 5, namespace = 'default') {
     });
     return response;
   } catch (error) {
-    console.warn('[PineconeService] Pinecone query failed:', error.message);
+    console.warn('[PineconeService] Pinecone query failed:', error.message, '. Falling back to in-memory store.');
+    if (localVectorStore.length > 0) {
+      const matches = localVectorStore
+        .map((item) => ({
+          id: item.id,
+          score: cosineSimilarity(queryVector, item.values),
+          metadata: item.metadata,
+        }))
+        .sort((a, b) => b.score - a.score)
+        .slice(0, topK);
+      return { matches };
+    }
     throw new Error(`Pinecone query failed: ${error.message}`);
   }
 }

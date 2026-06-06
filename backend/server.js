@@ -25,9 +25,29 @@ const analysisRoutes = require('./routes/analysisRoutes');
 const compareRoutes = require('./routes/compareRoutes');
 const historyRoutes = require('./routes/historyRoutes');
 
+const fs = require('fs');
+
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175'
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    const isAllowed = allowedOrigins.includes(origin) || origin.endsWith('.onrender.com');
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 app.use(express.json());
 
 app.use('/', uploadRoutes);
@@ -36,8 +56,9 @@ app.use('/', analysisRoutes);
 app.use('/', compareRoutes);
 app.use('/', historyRoutes);
 
-app.get('/', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'API is running' });
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
 });
 
 app.get('/test-embedding', async (req, res) => {
@@ -62,6 +83,26 @@ app.get('/env-status', (req, res) => {
   });
 });
 
+// Serve frontend static assets in production
+const frontendDist = path.resolve(__dirname, '../frontend/dist');
+if (fs.existsSync(frontendDist)) {
+  console.log('[Server] Serving static frontend from:', frontendDist);
+  app.use(express.static(frontendDist));
+  
+  // Wildcard route for React Router routing
+  app.get('*', (req, res) => {
+    const apiRoutes = ['/upload', '/ingest', '/ask', '/compare', '/history', '/health', '/test-embedding', '/env-status'];
+    if (apiRoutes.some(route => req.path.startsWith(route))) {
+      return res.status(404).json({ error: 'Not Found' });
+    }
+    res.sendFile(path.resolve(frontendDist, 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.status(200).json({ status: 'ok', message: 'API is running' });
+  });
+}
+
 app.use((err, req, res, next) => {
   console.error(err);
   const status = err.status || 500;
@@ -76,7 +117,7 @@ initializeDatabase().catch((error) => {
 });
 
 if (require.main === module) {
-  app.listen(PORT, () => {
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server listening on port ${PORT}`);
   });
 }
