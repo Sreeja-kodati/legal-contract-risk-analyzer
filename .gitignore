@@ -33,26 +33,34 @@ yarn-debug.log*
 yarn-error.log*
 
 # =========================
-# Database
+# Database Files
 # =========================
 *.db
 *.sqlite
 *.sqlite3
 
-database/
-backend/database/
+# IMPORTANT:
+# Do NOT ignore backend/database/
+# We need database.js tracked by Git
 
 # =========================
-# Uploaded Files
+# Upload Files Only
 # =========================
-uploads/
-backend/uploads/
+uploads/*
+backend/uploads/*
+
+# Keep folder structure
+!uploads/.gitkeep
+!backend/uploads/.gitkeep
 
 # =========================
 # Generated Reports
 # =========================
-reports/
-backend/reports/
+reports/*
+backend/reports/*
+
+!reports/.gitkeep
+!backend/reports/.gitkeep
 
 # =========================
 # Cache
@@ -71,8 +79,8 @@ Thumbs.db
 # VS Code
 # =========================
 .vscode/*
-!.vscode/extensions.json
 !.vscode/settings.json
+!.vscode/extensions.json
 
 # =========================
 # Temporary Files
@@ -93,3 +101,18 @@ pids
 *.pid
 *.seed
 *.pid.lock
+
+# =========================
+# Render
+# =========================
+.render
+
+# =========================
+# Vercel
+# =========================
+.vercel
+
+# =========================
+# Mac/Linux hidden files
+# =========================
+._*
