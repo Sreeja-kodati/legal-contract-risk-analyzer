@@ -47,7 +47,7 @@ function CompareContracts() {
       formData.append('contracts', contractA);
       formData.append('contracts', contractB);
 
-      const response = await fetch('/compare', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/compare`, {
         method: 'POST',
         body: formData,
       });

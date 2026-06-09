@@ -31,7 +31,7 @@ function Dashboard() {
   useEffect(() => {
     async function fetchHistory() {
       try {
-        const res = await fetch('/history');
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/history`);
         if (res.ok) {
           const data = await res.json();
           setHistoryItems(Array.isArray(data) ? data : []);

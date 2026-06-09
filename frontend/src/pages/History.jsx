@@ -21,7 +21,7 @@ function History() {
       setError('');
 
       try {
-        const response = await fetch('/history');
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/history`);
         if (!response.ok) {
           const body = await response.json().catch(() => null);
           throw new Error(body?.error || 'Unable to load history.');

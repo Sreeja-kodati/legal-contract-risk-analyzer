@@ -85,7 +85,7 @@ function Upload() {
       setStatus('PDF uploaded successfully. Starting ingestion...');
       setProgress(100);
 
-      const ingestResponse = await fetch('/ingest', {
+      const ingestResponse = await fetch(`${import.meta.env.VITE_API_URL}/ingest`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
